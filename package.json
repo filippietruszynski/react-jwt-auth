@@ -1,6 +1,6 @@
 {
   "name": "react-jwt-auth",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "A single-page React application implementing a user authentication system using Redux Toolkit for state management and JSON Web Tokens (JWT) for secure authentication and session handling.",
   "license": "MIT",

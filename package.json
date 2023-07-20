@@ -14,9 +14,9 @@
     "dev": "vite",
     "serve": "vite preview",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --quiet --ignore-path ./.gitignore",
-    "lint:fix": "npm run lint --fix",
+    "lint:fix": "npm run lint -- --fix",
     "prettier": "prettier \"./**/*.{js,jsx,ts,tsx,css,md,json}\" --loglevel warn --ignore-path ./.gitignore",
-    "prettier:format": "npm run prettier --write",
+    "prettier:format": "npm run prettier -- --write",
     "format": "npm run prettier:format && npm run lint:fix",
     "type-check": "tsc --pretty --noEmit"
   },
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/node": "^20.4.2",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@typescript-eslint/eslint-plugin": "^5.61.0",

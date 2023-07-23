@@ -5,6 +5,10 @@
     "moduleResolution": "node",
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "noEmit": true,
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -13,5 +17,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["./src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

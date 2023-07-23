@@ -18,11 +18,13 @@
     "url": "https://github.com/filippietruszynski"
   },
   "scripts": {
-    "format": "npm run prettier:format && npm run lint:fix",
+    "start": "webpack serve --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --quiet --ignore-path ./.gitignore",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "prettier \"./**/*.{js,jsx,ts,tsx,css,md,json}\" --loglevel warn --ignore-path ./.gitignore",
-    "prettier:format": "npm run prettier -- --write",
+    "prettier:write": "npm run prettier -- --write",
+    "code-format": "npm run prettier:write && npm run lint:fix",
     "type-check": "tsc --pretty --noEmit"
   },
   "dependencies": {
@@ -33,9 +35,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",
+    "@babel/plugin-transform-runtime": "^7.22.9",
     "@babel/preset-env": "^7.22.9",
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/node": "^20.4.2",
     "@types/react": "^18.2.14",
@@ -51,9 +55,11 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "html-webpack-plugin": "^5.5.3",
     "prettier": "^2.8.8",
+    "react-refresh": "^0.14.0",
     "typescript": "^5.0.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^4.15.1",
+    "webpack-merge": "^5.9.0"
   }
 }

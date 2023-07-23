@@ -24,7 +24,7 @@ export interface RefreshResponseData {
   refresh_token: string;
 }
 
-const baseUrl = import.meta.env.VITE_APP_API_BASE_URL;
+const baseUrl = process.env.API_BASE_URL;
 
 const baseQuery = fetchBaseQuery({
   baseUrl,

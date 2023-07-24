@@ -2,7 +2,7 @@ import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from '@reduxjs/tool
 
 import { RootState } from '@/app/store';
 import { setTokens } from '@/features/auth/auth-slice';
-import { HttpStatus } from '@/utils/http-status';
+import { HttpStatus } from '@/utils/http-status.enum';
 import { setTokenInSessionStorage } from '@/utils/tokens';
 
 export interface SigninRequestBody {

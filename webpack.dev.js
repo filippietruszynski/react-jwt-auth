@@ -8,7 +8,7 @@ module.exports = merge(common, {
   devServer: {
     hot: true,
     open: true,
-    static: './dist',
+    historyApiFallback: true,
   },
   plugins: [new ReactRefreshWebpackPlugin()],
 });

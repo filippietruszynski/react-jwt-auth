@@ -8,22 +8,46 @@ import {
   setTokenInSessionStorage,
 } from '@/utils/tokens';
 
-export interface SigninRequestBody {
+export interface SigninRequest {
   email: string;
   password: string;
 }
 
+interface SigninResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
+interface GetUserResponse {
+  id: number;
+  email: string;
+  password: string;
+  name: string;
+  role: string;
+  avatar: string;
+}
+
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+  avatar: string;
+}
+
 interface AuthState {
+  user: User | null;
   isAuthenticated: boolean;
 }
 
-const accessToken = getTokenFromSessionStorage('access_token');
-
 export const signin = createAsyncThunk(
   'auth/signin',
-  async ({ email, password }: SigninRequestBody, thunkAPI) => {
+  async ({ email, password }: SigninRequest, thunkAPI) => {
     try {
-      const response = await axiosInstance.post('auth/login', { email, password });
+      const response = await axiosInstance.post<SigninResponse>('auth/login', {
+        email,
+        password,
+      });
 
       setTokenInSessionStorage(response.data.access_token, 'access_token');
       setTokenInSessionStorage(response.data.refresh_token, 'refresh_token');
@@ -41,9 +65,19 @@ export const signout = createAsyncThunk('auth/signout', () => {
   removeTokenFromSessionStorage('refresh_token');
 });
 
-const initialState: AuthState = {
-  isAuthenticated: accessToken ? true : false,
-};
+export const getUser = createAsyncThunk('auth/getUser', async (_, thunkAPI) => {
+  try {
+    const response = await axiosInstance.get<GetUserResponse>('/auth/profile');
+    return response.data;
+  } catch (error) {
+    // TODO: handle error
+    return thunkAPI.rejectWithValue(error);
+  }
+});
+
+const accessToken = getTokenFromSessionStorage('access_token');
+
+const initialState: AuthState = { user: null, isAuthenticated: accessToken ? true : false };
 
 const authSlice = createSlice({
   name: 'auth',
@@ -59,6 +93,10 @@ const authSlice = createSlice({
       })
       .addCase(signout.fulfilled, (state) => {
         state.isAuthenticated = false;
+      })
+      .addCase(getUser.fulfilled, (state, action) => {
+        delete action.payload.password;
+        state.user = action.payload;
       });
   },
 });

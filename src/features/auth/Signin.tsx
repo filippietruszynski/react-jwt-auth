@@ -1,10 +1,9 @@
 import { ChangeEvent, MouseEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { SigninRequestBody, signin } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-app-dispatch';
 import { Path } from '@/utils/path.enum';
-
-import { SigninRequestBody, signin } from './auth.slice';
 
 function Signin() {
   const navigate = useNavigate();

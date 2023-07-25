@@ -4,13 +4,18 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import PrivateRoute from '@/components/PrivateRoute';
 import PublicRoute from '@/components/PublicRoute';
 import Signin from '@/features/auth/Signin';
-import { signout } from '@/features/auth/auth.slice';
+import { getUser, signout } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-app-dispatch';
 import { Path } from '@/utils/path.enum';
 
 function App() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  async function handleGetUser(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    await dispatch(getUser());
+  }
 
   async function handleSignout(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
@@ -48,6 +53,7 @@ function App() {
         element={
           <PrivateRoute>
             <h1>Private</h1>
+            <button onClick={handleGetUser}>Get user</button>
             <button onClick={handleSignout}>Sign out</button>
           </PrivateRoute>
         }

@@ -1,12 +1,14 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, MouseEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { SigninRequestBody, useSigninMutation } from '@/app/services/api';
+import { useAppDispatch } from '@/hooks/use-app-dispatch';
 import { Path } from '@/utils/path.enum';
+
+import { SigninRequestBody, signin } from './auth.slice';
 
 function Signin() {
   const navigate = useNavigate();
-  const [signin, { isLoading }] = useSigninMutation();
+  const dispatch = useAppDispatch();
 
   const initialFormState: SigninRequestBody = {
     email: '',
@@ -14,18 +16,23 @@ function Signin() {
   };
 
   const [formState, setFormState] = useState<SigninRequestBody>(initialFormState);
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleInputChange({ target: { name, value } }: ChangeEvent<HTMLInputElement>) {
     setFormState((prev) => ({ ...prev, [name]: value.trim() }));
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+
     try {
-      await signin(formState).unwrap();
-      setFormState(initialFormState);
+      setIsLoading(true);
+      await dispatch(signin(formState)).unwrap();
       navigate(Path.PRIVATE);
     } catch (error) {
       console.error(`Error submitting sign in form: ${error}`);
+    } finally {
+      setIsLoading(false);
     }
   }
 

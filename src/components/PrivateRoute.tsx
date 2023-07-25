@@ -1,14 +1,15 @@
 import { PropsWithChildren } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
+import { selectIsAuthenticated } from '@/features/auth/auth.slice';
+import { useTypedSelector } from '@/hooks/use-app-dispatch';
 import { Path } from '@/utils/path.enum';
 
 function PrivateRoute({ children }: PropsWithChildren) {
-  // TODO: Add selector
-  const auth = false;
   const location = useLocation();
+  const isAuthenticated = useTypedSelector(selectIsAuthenticated);
 
-  if (!auth) {
+  if (!isAuthenticated) {
     return <Navigate to={Path.SIGNIN} state={{ from: location }} replace />;
   }
 

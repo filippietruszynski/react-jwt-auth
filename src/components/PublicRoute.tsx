@@ -1,6 +1,8 @@
 import { PropsWithChildren } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
+import { selectIsAuthenticated } from '@/features/auth/auth.slice';
+import { useTypedSelector } from '@/hooks/use-app-dispatch';
 import { Path } from '@/utils/path.enum';
 
 interface PublicRouteProps extends PropsWithChildren {
@@ -8,11 +10,10 @@ interface PublicRouteProps extends PropsWithChildren {
 }
 
 function PublicRoute({ restricted = false, children }: PublicRouteProps) {
-  // TODO: Add selector
-  const auth = false;
   const location = useLocation();
+  const isAuthenticated = useTypedSelector(selectIsAuthenticated);
 
-  if (auth && restricted) {
+  if (isAuthenticated && restricted) {
     return <Navigate to={Path.PRIVATE} state={{ from: location }} replace />;
   }
 

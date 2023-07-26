@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
 import { selectIsAuthenticated } from '@/features/auth/auth.slice';
-import { useTypedSelector } from '@/hooks/use-app-dispatch';
+import { useTypedSelector } from '@/hooks/use-typed-selector';
 import { Path } from '@/utils/path.enum';
 
 interface PublicRouteProps extends PropsWithChildren {

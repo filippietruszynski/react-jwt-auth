@@ -1,31 +1,12 @@
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
-import { axiosInstance } from '@/app/axios-instance';
 import { RootState } from '@/app/store';
+import AuthService, { SigninRequestData } from '@/features/auth/auth.service';
 import {
   getTokenFromSessionStorage,
   removeTokenFromSessionStorage,
   setTokenInSessionStorage,
 } from '@/utils/tokens';
-
-export interface SigninRequest {
-  email: string;
-  password: string;
-}
-
-interface SigninResponse {
-  access_token: string;
-  refresh_token: string;
-}
-
-interface GetUserResponse {
-  id: number;
-  email: string;
-  password: string;
-  name: string;
-  role: string;
-  avatar: string;
-}
 
 interface User {
   id: number;
@@ -42,15 +23,14 @@ interface AuthState {
 
 export const signin = createAsyncThunk(
   'auth/signin',
-  async ({ email, password }: SigninRequest, thunkAPI) => {
+  async (requestData: SigninRequestData, thunkAPI) => {
     try {
-      const response = await axiosInstance.post<SigninResponse>('auth/login', {
-        email,
-        password,
-      });
+      const response = await AuthService.signin(requestData);
 
       setTokenInSessionStorage(response.data.access_token, 'access_token');
       setTokenInSessionStorage(response.data.refresh_token, 'refresh_token');
+
+      thunkAPI.dispatch(getUser());
 
       return;
     } catch (error) {
@@ -60,14 +40,9 @@ export const signin = createAsyncThunk(
   },
 );
 
-export const signout = createAsyncThunk('auth/signout', () => {
-  removeTokenFromSessionStorage('access_token');
-  removeTokenFromSessionStorage('refresh_token');
-});
-
 export const getUser = createAsyncThunk('auth/getUser', async (_, thunkAPI) => {
   try {
-    const response = await axiosInstance.get<GetUserResponse>('/auth/profile');
+    const response = await AuthService.getUser();
     return response.data;
   } catch (error) {
     // TODO: handle error
@@ -75,9 +50,41 @@ export const getUser = createAsyncThunk('auth/getUser', async (_, thunkAPI) => {
   }
 });
 
-const accessToken = getTokenFromSessionStorage('access_token');
+export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, thunkAPI) => {
+  try {
+    const refresh_token = getTokenFromSessionStorage('refresh_token');
 
-const initialState: AuthState = { user: null, isAuthenticated: accessToken ? true : false };
+    if (!refresh_token) {
+      return thunkAPI.rejectWithValue('Error refreshing token: No refresh token found');
+    }
+
+    const response = await AuthService.refreshToken({
+      refreshToken: refresh_token,
+    });
+
+    setTokenInSessionStorage(response.data.access_token, 'access_token');
+    setTokenInSessionStorage(response.data.refresh_token, 'refresh_token');
+
+    thunkAPI.dispatch(getUser());
+
+    return;
+  } catch (error) {
+    thunkAPI.dispatch(signout());
+    // TODO: handle error
+    return thunkAPI.rejectWithValue(error);
+  }
+});
+
+export const signout = createAsyncThunk('auth/signout', () => {
+  removeTokenFromSessionStorage('access_token');
+  removeTokenFromSessionStorage('refresh_token');
+  return;
+});
+
+const access_token = getTokenFromSessionStorage('access_token');
+const refresh_token = getTokenFromSessionStorage('refresh_token');
+
+const initialState: AuthState = { user: null, isAuthenticated: !!access_token && !!refresh_token };
 
 const authSlice = createSlice({
   name: 'auth',
@@ -91,15 +98,24 @@ const authSlice = createSlice({
       .addCase(signin.rejected, (state) => {
         state.isAuthenticated = false;
       })
-      .addCase(signout.fulfilled, (state) => {
-        state.isAuthenticated = false;
-      })
       .addCase(getUser.fulfilled, (state, action) => {
         delete action.payload.password;
         state.user = action.payload;
+      })
+      .addCase(refreshToken.fulfilled, (state) => {
+        state.isAuthenticated = true;
+      })
+      .addCase(signout.fulfilled, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
       });
   },
 });
+
+export const selectCurrentUser = createSelector(
+  (state: RootState) => state.auth,
+  (auth) => auth.user,
+);
 
 export const selectIsAuthenticated = createSelector(
   (state: RootState) => state.auth,

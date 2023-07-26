@@ -4,7 +4,8 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 
 import App from '@/App';
-import { store } from '@/app/store';
+import { setupAxiosInterceptors } from '@/app/axios';
+import store from '@/app/store';
 
 const rootElement = document.getElementById('root') as HTMLElement;
 const root = ReactDOM.createRoot(rootElement);
@@ -18,3 +19,5 @@ root.render(
     </ReduxProvider>
   </React.StrictMode>,
 );
+
+setupAxiosInterceptors(store);

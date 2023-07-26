@@ -1,7 +1,8 @@
 import { ChangeEvent, MouseEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { SigninRequestBody, signin } from '@/features/auth/auth.slice';
+import { SigninRequestData } from '@/features/auth/auth.service';
+import { signin } from '@/features/auth/auth.slice';
 import { useAppDispatch } from '@/hooks/use-app-dispatch';
 import { Path } from '@/utils/path.enum';
 
@@ -9,12 +10,13 @@ function Signin() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const initialFormState: SigninRequestBody = {
-    email: '',
-    password: '',
+  // Sign in credentials commited on purpose
+  const initialFormState: SigninRequestData = {
+    email: 'john@mail.com',
+    password: 'changeme',
   };
 
-  const [formState, setFormState] = useState<SigninRequestBody>(initialFormState);
+  const [formState, setFormState] = useState<SigninRequestData>(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
 
   function handleInputChange({ target: { name, value } }: ChangeEvent<HTMLInputElement>) {
@@ -39,7 +41,6 @@ function Signin() {
     <>
       <h1>Sign in</h1>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        Email: john@mail.com
         <input
           type="text"
           name="email"
@@ -48,7 +49,6 @@ function Signin() {
           value={formState.email}
           onChange={handleInputChange}
         />
-        Password: changeme
         <input
           type="password"
           name="password"

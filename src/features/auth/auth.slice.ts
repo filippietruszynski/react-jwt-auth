@@ -2,6 +2,7 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '@/app/store';
 import AuthService, { SigninRequestData } from '@/features/auth/auth.service';
+import { isTokenValid } from '@/utils/is-token-valid';
 import {
   getTokenFromSessionStorage,
   removeTokenFromSessionStorage,
@@ -81,10 +82,10 @@ export const signout = createAsyncThunk('auth/signout', () => {
   return;
 });
 
-const access_token = getTokenFromSessionStorage('access_token');
 const refresh_token = getTokenFromSessionStorage('refresh_token');
+const isRefreshTokenValid = isTokenValid(refresh_token);
 
-const initialState: AuthState = { user: null, isAuthenticated: !!access_token && !!refresh_token };
+const initialState: AuthState = { user: null, isAuthenticated: isRefreshTokenValid };
 
 const authSlice = createSlice({
   name: 'auth',
@@ -112,14 +113,8 @@ const authSlice = createSlice({
   },
 });
 
-export const selectCurrentUser = createSelector(
-  (state: RootState) => state.auth,
-  (auth) => auth.user,
-);
-
-export const selectIsAuthenticated = createSelector(
-  (state: RootState) => state.auth,
-  (auth) => auth.isAuthenticated,
-);
+const selectAuth = (state: RootState) => state.auth;
+export const selectUser = createSelector([selectAuth], (auth) => auth.user);
+export const selectIsAuthenticated = createSelector([selectAuth], (auth) => auth.isAuthenticated);
 
 export default authSlice.reducer;
